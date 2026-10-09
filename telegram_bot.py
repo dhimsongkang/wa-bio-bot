@@ -45,7 +45,7 @@ def start_driver():
     opts.add_argument('--window-size=1200,800')
     import platform
     if platform.system() == 'Linux':
-        opts.binary_location = '/usr/bin/chromium'
+        opts.binary_location = '/usr/sbin/chromium'
 
     opts.add_argument('--headless=new')
     opts.add_argument('--no-sandbox')
