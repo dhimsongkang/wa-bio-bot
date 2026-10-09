@@ -52,7 +52,12 @@ def start_driver():
     opts.add_argument('--disable-dev-shm-usage')
     opts.add_argument('--disable-gpu')
 
-    service = Service(ChromeDriverManager().install())
+    from webdriver_manager.core.os_manager import ChromeType
+    try:
+        service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    except Exception:
+        # Fallback jika webdriver-manager gagal di Linux
+        service = Service()
     drv = webdriver.Chrome(service=service, options=opts)
     drv.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     drv.get('https://web.whatsapp.com')
