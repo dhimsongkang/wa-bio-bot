@@ -99,10 +99,14 @@ def wait_for_login(drv, chat_id, timeout=120):
                 
             # DEBUG: Send full screen every 20 seconds if no QR found
             if time.time() - last_debug_time > 20 and not last_qr_b64:
-                bot.send_photo(chat_id, drv.get_screenshot_as_png(), caption="[DEBUG] Layar WhatsApp Web saat ini (menunggu loading/QR).")
+                try:
+                    bot.send_photo(chat_id, drv.get_screenshot_as_png(), caption="[DEBUG] Layar WhatsApp Web saat ini.")
+                except Exception:
+                    pass
                 last_debug_time = time.time()
                 
-        except WebDriverException:
+        except WebDriverException as e:
+            bot.send_message(chat_id, f"⚠️ [DEBUG ERROR] Browser Crash/Tertutup: {str(e)[:200]}")
             break
         time.sleep(1.5)
     return False
