@@ -47,10 +47,12 @@ def start_driver():
     if platform.system() == 'Linux':
         opts.binary_location = '/usr/bin/chromium'
 
-    opts.add_argument('--headless=new')
+    opts.add_argument('--headless')
     opts.add_argument('--no-sandbox')
     opts.add_argument('--disable-dev-shm-usage')
     opts.add_argument('--disable-gpu')
+    opts.add_argument('--disable-software-rasterizer')
+    opts.add_argument('--disable-extensions')
 
     from webdriver_manager.core.os_manager import ChromeType
     try:
