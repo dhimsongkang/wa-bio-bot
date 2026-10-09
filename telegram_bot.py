@@ -43,10 +43,10 @@ def start_driver():
     os.makedirs(wa_profile, exist_ok=True)
     opts.add_argument(f'--user-data-dir={wa_profile}')
     opts.add_argument('--window-size=1200,800')
-    opts.add_experimental_option('excludeSwitches', ['enable-automation', 'enable-logging'])
-    opts.add_experimental_option('useAutomationExtension', False)
-    
-    # Wajib untuk VPS Linux (tanpa monitor)
+    import platform
+    if platform.system() == 'Linux':
+        opts.binary_location = '/usr/bin/chromium'
+
     opts.add_argument('--headless=new')
     opts.add_argument('--no-sandbox')
     opts.add_argument('--disable-dev-shm-usage')
