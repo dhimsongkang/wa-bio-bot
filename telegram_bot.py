@@ -43,23 +43,20 @@ def start_driver():
     os.makedirs(wa_profile, exist_ok=True)
     opts.add_argument(f'--user-data-dir={wa_profile}')
     opts.add_argument('--window-size=1200,800')
-    # Jangan batasi binary_location secara manual, biarkan Selenium mencarinya sendiri
+    import platform
+    if platform.system() == 'Linux':
+        opts.binary_location = '/usr/bin/chromium'
 
     opts.add_argument('--headless=new')
     opts.add_argument('--no-sandbox')
     opts.add_argument('--disable-dev-shm-usage')
     opts.add_argument('--disable-gpu')
 
-    import platform
-    if platform.system() == 'Linux':
-        # Di Linux VPS (Arch/CachyOS), gunakan chromedriver bawaan sistem yang versinya sama dengan Chromium
-        service = Service('/usr/bin/chromedriver')
-    else:
-        from webdriver_manager.core.os_manager import ChromeType
-        try:
-            service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-        except Exception:
-            service = Service()
+    from webdriver_manager.core.os_manager import ChromeType
+    try:
+        service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    except Exception:
+        service = Service()
     drv = webdriver.Chrome(service=service, options=opts)
     drv.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     drv.get('https://web.whatsapp.com')
