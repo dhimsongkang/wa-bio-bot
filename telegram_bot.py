@@ -67,6 +67,7 @@ def wait_for_login(drv, chat_id, timeout=120):
     start = time.time()
     last_qr_b64 = None
     qr_msg_id = None
+    last_debug_time = time.time()
     
     while time.time() - start < timeout:
         try:
@@ -77,11 +78,9 @@ def wait_for_login(drv, chat_id, timeout=120):
                 b64 = base64.b64encode(png).decode()
                 if b64 != last_qr_b64:
                     last_qr_b64 = b64
-                    # Send QR as photo
                     msg = bot.send_photo(chat_id, png, caption="📸 Silakan scan QR Code ini menggunakan WhatsApp di HP kamu!")
                     if qr_msg_id:
-                        try:
-                            bot.delete_message(chat_id, qr_msg_id)
+                        try: bot.delete_message(chat_id, qr_msg_id)
                         except: pass
                     qr_msg_id = msg.message_id
             except NoSuchElementException:
@@ -92,12 +91,17 @@ def wait_for_login(drv, chat_id, timeout=120):
                 drv.find_element(By.CSS_SELECTOR, '#app div[data-tab="3"], div[aria-label="Search input textbox"], div[title="New chat"], header img')
                 bot.send_message(chat_id, "✅ Login berhasil!")
                 if qr_msg_id:
-                    try:
-                        bot.delete_message(chat_id, qr_msg_id)
+                    try: bot.delete_message(chat_id, qr_msg_id)
                     except: pass
                 return True
             except NoSuchElementException:
                 pass
+                
+            # DEBUG: Send full screen every 20 seconds if no QR found
+            if time.time() - last_debug_time > 20 and not last_qr_b64:
+                bot.send_photo(chat_id, drv.get_screenshot_as_png(), caption="[DEBUG] Layar WhatsApp Web saat ini (menunggu loading/QR).")
+                last_debug_time = time.time()
+                
         except WebDriverException:
             break
         time.sleep(1.5)
